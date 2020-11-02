@@ -4,7 +4,6 @@ package com.pragra.abfapi.ws.consume;
 import com.pragra.abfapi.dto.ABFDto;
 import com.pragra.abfapi.dto.TrackingDto;
 import com.pragra.abfapi.model.requestmodel.TrackingRequestModel;
-import com.pragra.abfapi.model.responsemodel.TrackingRest;
 import com.pragra.abfapi.service.AbfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,15 +21,13 @@ public class AbfCourierRestService {
     @GetMapping(path="/couriers",
                 produces = {MediaType.APPLICATION_JSON_VALUE})
     public ABFDto  getCouriers(){
-        ABFDto couriers=abfService.getCouriers();
-        return couriers;
+        return abfService.getCouriers();
     }
 
     @GetMapping(path="/couriers/all",
                 produces = {MediaType.APPLICATION_JSON_VALUE})
     public ABFDto  getAllCouriers(){
-        ABFDto couriers=abfService.getAllCouriers();
-        return couriers;
+        return abfService.getAllCouriers();
     }
 
     @PostMapping(path="/trackings",
@@ -38,7 +35,7 @@ public class AbfCourierRestService {
             produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE})
     public TrackingDto createNewTracking(@RequestBody TrackingRequestModel tracking){
 
-        TrackingRest trackingRest=new TrackingRest();
+        //TrackingRest trackingRest=new TrackingRest();
         TrackingDto trackingDto=new TrackingDto();
 
 
