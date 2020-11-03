@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class AbfApiApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(AbfApiApplication.class, args);
 	}
 

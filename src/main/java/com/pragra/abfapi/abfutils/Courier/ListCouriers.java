@@ -1,4 +1,4 @@
-package com.pragra.abfapi.abfutils.tracking;
+package com.pragra.abfapi.abfutils.Courier;
 
 import com.aftership.sdk.AfterShip;
 import com.aftership.sdk.exception.AftershipException;
