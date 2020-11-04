@@ -1,14 +1,17 @@
-package com.pragra.abfapi.ws.consume;
+package com.pragra.abfapi.ws.produces.couriers;
 
 
 import com.aftership.sdk.AfterShip;
 import com.aftership.sdk.model.courier.CourierDetectList;
 import com.aftership.sdk.model.courier.CourierList;
+import com.aftership.sdk.model.tracking.Tracking;
 import com.pragra.abfapi.abfutils.CommonUtils;
 import com.pragra.abfapi.abfutils.Courier.DetectCouriers;
 import com.pragra.abfapi.abfutils.Courier.ListAllCouriers;
 import com.pragra.abfapi.abfutils.Courier.ListCouriers;
 import com.pragra.abfapi.abfutils.tracking.CreateTracking;
+import com.pragra.abfapi.abfutils.tracking.DeleteTracking;
+import com.pragra.abfapi.constants.EndpointPath;
 import com.pragra.abfapi.constants.SecurityConstants;
 import com.pragra.abfapi.dto.ABFDto;
 import com.pragra.abfapi.dto.CourierDetectListDto;
@@ -30,10 +33,11 @@ public class AbfCourierRestService {
     @Autowired
     private AbfService abfService;
 
-    @GetMapping(path="/couriers",
-                produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ABFDto  getCouriers(){
 
+    @GetMapping(path= EndpointPath.COURIERS,
+                consumes = {MediaType.APPLICATION_JSON_VALUE},
+                produces = {MediaType.APPLICATION_JSON_VALUE})
+    public CourierList  getCouriers(){
         AfterShip afterShip=new AfterShip(CommonUtils.getEnvApiKey(),CommonUtils.getAfterShipOption());
         ListCouriers listCouriers=new ListCouriers();
         CourierList courierList = null ;
@@ -46,14 +50,13 @@ public class AbfCourierRestService {
         }
         ModelMapper mapper=new ModelMapper();
         ABFDto abfDto=mapper.map(courierList,ABFDto.class);
-        System.out.println(abfDto);
-
-        return abfDto;
+        return  courierList;
     }
 
-    @GetMapping(path="/couriers/all",
+    @GetMapping(path=EndpointPath.LIST_ALL_COURIERS,
+                consumes = {MediaType.APPLICATION_JSON_VALUE},
                 produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ABFDto  getAllCouriers(){
+    public CourierList  getAllCouriers(){
 
         AfterShip afterShip=new AfterShip(CommonUtils.getEnvApiKey(),CommonUtils.getAfterShipOption());
         ListAllCouriers listCouriers= new ListAllCouriers();
@@ -64,16 +67,14 @@ public class AbfCourierRestService {
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-
         ModelMapper mapper=new ModelMapper();
         ABFDto abfDto=mapper.map(courierList,ABFDto.class);
         System.out.println(abfDto);
-
-        return abfDto;
+        return courierList;
     }
 
 
-    @PostMapping(path="/couriers/detect",
+    @PostMapping(path=EndpointPath.DETECT_COURIERS,
             consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_ATOM_XML_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE})
     public CourierDetectListDto detectCouriers(@RequestBody DetectCourierRequestModel tracking){
@@ -89,37 +90,28 @@ public class AbfCourierRestService {
             ModelMapper mapper = new ModelMapper();
             CourierDetectListDto courierDetectListDto = mapper.map(courierDetectList,CourierDetectListDto.class);
 
-            System.out.println("******************"+courierDetectList);
-
             return courierDetectListDto;
 
         }
         catch (Exception e){
+            System.out.println(e.getMessage());
 
         }
 
         return null;
     }
 
-
-
-
-
-
-    @PostMapping(path="/trackings",
+    @PostMapping(path=EndpointPath.CREATE_TRACKING,
             consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_ATOM_XML_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE})
     public TrackingRequestDto createNewTracking(@RequestBody TrackingRequestModel tracking){
-
-        //TrackingRest trackingRest=new TrackingRest();
         AfterShip afterShip=new AfterShip(SecurityConstants.AFTER_SHIP_API_KEY,CommonUtils.getAfterShipOption());
-
-        CreateTracking createTracking=new CreateTracking();
+        CreateTracking createTracking = new CreateTracking();
 
         ModelMapper mapper=new ModelMapper();
         TrackingRequestDto trackingDto=mapper.map(tracking,TrackingRequestDto.class);
         try {
-         //   createTracking.createTracking(afterShip, trackingDto);
+            // createTracking.createTracking(afterShip, trackingDto);
             ListCouriers couriers=new ListCouriers();
             couriers.listCouriers(afterShip);
             System.out.println(couriers);
@@ -127,12 +119,21 @@ public class AbfCourierRestService {
         catch(Exception e){
             System.out.println(e.getMessage());
         }
-        //System.out.println(trackingDto);
-        //System.out.println(tracking);
-
         return abfService.createNewTracking(trackingDto);
     }
 
+    
+    @PostMapping(path=EndpointPath.DELETE_TRACKING,
+                    consumes = {MediaType.APPLICATION_JSON_VALUE},
+                    produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Tracking deleteTracking(@RequestBody TrackingRequestDto trackingDto){
 
+        AfterShip afterShip=new AfterShip(SecurityConstants.AFTER_SHIP_API_KEY,CommonUtils.getAfterShipOption());
+        String trackingNumber = trackingDto.getTracking().getTrackingNumber();
+        DeleteTracking deleteTracking = new DeleteTracking();
+        Tracking tracking = deleteTracking.deleteTracking(afterShip,trackingNumber);
+        return tracking;
+
+    }
 
 }
